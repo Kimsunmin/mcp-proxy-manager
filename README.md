@@ -29,6 +29,26 @@ MCP 클라이언트(Claude Desktop, Cursor 등)와 실제 MCP 서버 사이에 �
 
 ## 작동 원리
 
+```mermaid
+sequenceDiagram
+    participant Client as MCP Client
+    participant Proxy as MCP Proxy Manager
+    participant Server as Original MCP Server
+    
+    Note over Proxy: 1. SSE 스트림 가로채기
+    Client->>Proxy: 연결 요청
+    Proxy->>Server: 원본 서버 연결
+    Server-->>Proxy: 툴 목록 전송 (tools/list)
+    Proxy-->>Proxy: 저장된 프롬프트(설명) 덮어쓰기
+    Proxy-->>Client: 수정된 툴 목록 전달
+    
+    Note over Proxy: 2. 툴 실행 중계
+    Client->>Proxy: 툴 실행 요청 (POST)
+    Proxy->>Server: 요청 전달
+    Server-->>Proxy: 실행 결과 반환
+    Proxy-->>Client: 결과 전달
+```
+
 *   **탐색 (Discovery)**: SSE 스트림을 가로챕니다. 서버가 `tools/list` 결과를 보낼 때, 대시보드에서 저장한 수정(override) 사항을 주입하여 클라이언트에 전달합니다.
 *   **실행 (Execution)**: 엔드포인트 주소를 자동으로 재작성합니다. 클라이언트가 툴을 실행하면 요청이 프록시를 거쳐 원본 서버로 투명하게 전달됩니다.
 

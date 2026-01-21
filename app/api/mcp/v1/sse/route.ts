@@ -1,15 +1,19 @@
 ﻿import { mcpStore, MCPTool } from "@/lib/mcp-store";
 import { NextRequest, NextResponse } from "next/server";
 
-const ORIGINAL_MCP_URL = process.env.ORIGINAL_MCP_URL || "http://localhost:8080/sse";
-
-export const dynamic = "force-dynamic"; 
+export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-    console.log(`[Proxy] Connecting to original MCP server: ${ORIGINAL_MCP_URL}`);
+    // MCPStore의 전역 설정값만 사용
+    const config = mcpStore.getConfig();
+    const sseUrl = `${config.baseUrl}${config.ssePath}`;
+    if (!sseUrl || !sseUrl.startsWith("http")) {
+        return new NextResponse("Invalid or missing SSE server URL", { status: 400 });
+    }
+    console.log(`[Proxy] Connecting to original MCP server: ${sseUrl}`);
 
     try {
-        const originalResponse = await fetch(ORIGINAL_MCP_URL, {
+        const originalResponse = await fetch(sseUrl, {
             method: "GET",
             headers: {
                 Accept: "text/event-stream",

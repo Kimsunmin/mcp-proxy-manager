@@ -3,12 +3,20 @@
 
 import { ToolCard } from "@/components/tool-card";
 import { SearchBar } from "@/components/search-bar";
+import { ServerConfigModal } from "@/components/server-config-modal";
 import { useState } from "react";
 import { useTools } from "./useTools";
 
 export function DashboardClient() {
   const [searchQuery, setSearchQuery] = useState("");
-  const { tools, loading, error, refresh } = useTools();
+  const [serverConfig, setServerConfig] = useState({
+    baseUrl: process.env.NEXT_PUBLIC_MCP_BASE_URL || "http://localhost:8080",
+    ssePath: process.env.NEXT_PUBLIC_MCP_SSE_PATH || "/sse",
+    messagePath: process.env.NEXT_PUBLIC_MCP_MESSAGE_PATH || "/mcp/message",
+  });
+  const sseUrl = `${serverConfig.baseUrl}${serverConfig.ssePath}`;
+  // messageUrl도 필요시 `${serverConfig.baseUrl}${serverConfig.messagePath}`로 조합
+  const { tools, loading, error, refresh } = useTools(sseUrl);
 
   const filteredTools = tools.filter((tool) => {
     const query = searchQuery.toLowerCase();
@@ -29,6 +37,12 @@ export function DashboardClient() {
           >
             {loading ? "Refreshing..." : "Refresh"}
           </button>
+          <ServerConfigModal
+            currentBaseUrl={serverConfig.baseUrl}
+            currentSsePath={serverConfig.ssePath}
+            currentMessagePath={serverConfig.messagePath}
+            onApply={setServerConfig}
+          />
         </div>
       </div>
 

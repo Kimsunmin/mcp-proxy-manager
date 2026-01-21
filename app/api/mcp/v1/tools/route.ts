@@ -3,12 +3,18 @@ import { Client } from "@modelcontextprotocol/sdk/client";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { NextResponse } from "next/server";
 
-const ORIGINAL_MCP_URL = process.env.ORIGINAL_MCP_URL || "http://localhost:8080/sse";
-
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-    const transport = new SSEClientTransport(new URL(ORIGINAL_MCP_URL));
+    // MCPStore의 전역 설정값만 사용
+    const config = mcpStore.getConfig();
+    const mcpUrl = `${config.baseUrl}${config.ssePath}`;
+    if (!mcpUrl || !mcpUrl.startsWith("http")) {
+        return new NextResponse(JSON.stringify({ error: "Invalid or missing MCP server URL" }), { status: 400 });
+    }
+
+    // 1. SDK 클라이언트 및 전송 수단 초기화
+    const transport = new SSEClientTransport(new URL(mcpUrl));
     const client = new Client(
         {
             name: "mcp-proxy-route",

@@ -14,9 +14,10 @@ import { MCPTool } from "@/lib/mcp-store";
 
 interface ToolCardProps {
   tool: MCPTool;
+  onRefresh?: () => void;
 }
 
-export function ToolCard({ tool }: ToolCardProps) {
+export function ToolCard({ tool, onRefresh }: ToolCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [description, setDescription] = useState(tool.description || "");
   const [isSaving, setIsSaving] = useState(false);
@@ -26,6 +27,7 @@ export function ToolCard({ tool }: ToolCardProps) {
     await saveToolOverride(tool.name, description);
     setIsSaving(false);
     setIsEditing(false);
+    onRefresh?.();
   };
 
   const handleReset = async () => {
@@ -34,6 +36,7 @@ export function ToolCard({ tool }: ToolCardProps) {
     await resetToolOverride(tool.name);
     setDescription(tool._originalDescription || ""); // 원본으로 복구 시각적 처리
     setIsSaving(false);
+    onRefresh?.();
   };
 
   return (

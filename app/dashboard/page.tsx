@@ -1,20 +1,9 @@
 ﻿// app/dashboard/page.tsx
-import { MCPTool } from "@/lib/mcp-store";
-import { getTools } from "./actions";
 import { DashboardClient } from "./dashboard-client";
 
 export const dynamic = "force-dynamic"; // 항상 최신 데이터 로드
 
-export default async function DashboardPage() {
-    const tools: MCPTool[] = [];
-
-    try {
-        const fetchedTools = await getTools();
-        tools.push(...fetchedTools);
-    } catch (error) {
-        console.error("[DashboardPage] Error fetching tools:", error);
-    }
-
+export default function DashboardPage() {
     return (
         <div className="h-screen overflow-y-auto bg-background no-scrollbar">
             {/* Header */}
@@ -36,7 +25,7 @@ export default async function DashboardPage() {
             </header>
 
             <main className="container mx-auto py-8 px-4">
-               <DashboardClient initialTools={tools} />
+               <DashboardClient />
             </main>
         </div>
     );

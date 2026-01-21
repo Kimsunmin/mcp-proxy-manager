@@ -9,6 +9,7 @@ export async function GET(request: Request) {
     // MCPStore의 전역 설정값만 사용
     const config = mcpStore.getConfig();
     const mcpUrl = `${config.baseUrl}${config.ssePath}`;
+    console.log("[Dashboard] Using MCP URL:", mcpUrl);
     if (!mcpUrl || !mcpUrl.startsWith("http")) {
         return new NextResponse(JSON.stringify({ error: "Invalid or missing MCP server URL" }), { status: 400 });
     }
@@ -25,7 +26,6 @@ export async function GET(request: Request) {
         }
     );
 
-    const tools: MCPTool[] = [];
     try {
         // 2. 서버 연결 (Handshake & Session ID 자동 처리)
         await client.connect(transport);

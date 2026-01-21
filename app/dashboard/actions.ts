@@ -20,3 +20,9 @@ export async function resetToolOverride(toolName: string) {
   revalidatePath("/dashboard");
   return { success: true };
 }
+
+export async function saveServerConfig(baseUrl: string, ssePath: string, messagePath: string) {
+  mcpStore.setConfig({ baseUrl, ssePath, messagePath });
+  revalidatePath("/dashboard");
+  return { success: true };
+}

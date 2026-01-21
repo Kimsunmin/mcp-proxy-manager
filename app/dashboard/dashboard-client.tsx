@@ -6,6 +6,7 @@ import { SearchBar } from "@/components/search-bar";
 import { ServerConfigModal } from "@/components/server-config-modal";
 import { useState } from "react";
 import { useTools } from "./useTools";
+import { saveServerConfig } from "./actions";
 
 export function DashboardClient() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,6 +26,12 @@ export function DashboardClient() {
     return nameMatch || descMatch;
   });
 
+  const handleServerConfigApply = async (config: { baseUrl: string; ssePath: string; messagePath: string }) => {
+    setServerConfig(config);
+    await saveServerConfig(config.baseUrl, config.ssePath, config.messagePath);
+    refresh();
+  };
+
   return (
     <>
       <div className="mb-6 flex items-center justify-between">
@@ -41,7 +48,7 @@ export function DashboardClient() {
             currentBaseUrl={serverConfig.baseUrl}
             currentSsePath={serverConfig.ssePath}
             currentMessagePath={serverConfig.messagePath}
-            onApply={setServerConfig}
+            onApply={handleServerConfigApply}
           />
         </div>
       </div>
